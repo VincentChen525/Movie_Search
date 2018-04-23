@@ -1,11 +1,5 @@
 
-<%--
-  Created by IntelliJ IDEA.
-  User: eightant
-  Date: 2016/12/16
-  Time: 10:17
-  To change this template use File | Settings | File Templates.
---%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="java.util.*" %>
 <%@ page import="java.lang.Math" %>
@@ -15,11 +9,14 @@
 
 <%
     String query = (String) request.getAttribute("query");
+    String field = (String) request.getAttribute("field");
     List<MovieDoc> list = (List<MovieDoc>) request.getAttribute("docList");
+
     int totalDoc = (int) request.getAttribute("totalDocs");
     double time = Double.parseDouble(request.getAttribute("time").toString());
     int pageNow = (int) request.getAttribute("pageNow");
     int pageCount = (int) request.getAttribute("pageCount");
+    String filter = "";
 %>
 <html>
     <head>
@@ -75,6 +72,7 @@
                         <script>
                             function SubmitForm() {
                                 var query = document.getElementById("query").value;
+                                <%=query%> = query;
                                 var filter = "";
                                 var filt = document.getElementsByName("filt");
                                 for (var i = 0; i < filt.length; i++) {
@@ -82,6 +80,7 @@
                                         filter += filt[i].value + ",";
                                     }
                                 }
+                                <%=filter%> = filter;
                                 var location = "search?query=" + query + "&field=" + filter;
                                 //window.navigate(location);
                                 window.location.href = location;
@@ -122,9 +121,9 @@
                 </div>
                 <div>
                     <div class="left-wrapper">
-                        <p>Duration: <%=movie.getDuration()%></p>
-                        <p>Director: <%=movie.getDirector()%></p>
-                        <p>Genres:
+                        <p><b>Duration</b>: <%=movie.getDuration()%></p>
+                        <p><b>Director</b>: <%=movie.getDirector()%></p>
+                        <p><b>Genres</b>:
                             <% for (int i = 1; i < movie.getGenres().split(" ").length; i++) {%>
                             <%=movie.getGenres().split(" ")[i]%>
                             <% if (i != movie.getGenres().split(" ").length - 1) {%>
@@ -132,7 +131,7 @@
                             <%}%>
                             <%}%>
                         </p>
-                        <p>Stars:
+                        <p><b>Stars</b>:
                             <%String parseMovie = movie.getActors().replaceAll("[{'}]","");%>
                             <%String[] actors = parseMovie.split(",");%>
                             <%for (int i = 0; i < actors.length; i++) {%>
@@ -142,7 +141,7 @@
                             <%}%>
                             <%}%>
                         </p>
-                        <p>Date: <%=movie.getReleaseDate()%></p>
+                        <p><b>Date</b>: <%=movie.getReleaseDate()%></p>
                     </div>
                     <div class="right-wrapper">
                         <img class="poster" src=<%=movie.getPoster()%>>
@@ -166,7 +165,7 @@
                 <%
                     if (pageNow != 1) {
                 %>
-                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&&pageNow=<%=pageNow - 1%>">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&pageNow=<%=pageNow - 1%>&field=<%=field%>">Previous</a></li>
                     <%
                         }
                     %>
@@ -174,11 +173,11 @@
                     for (int i = 1; i <= pageCount; i++) {
                         if (i != pageNow) {
                 %>
-                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&&pageNow=<%=i%>"><%=i%></a></li>
+                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&pageNow=<%=i%>&field=<%=field%>"><%=i%></a></li>
                     <%
                     } else {
                     %>
-                <li class="page-item active"><a class="page-link" href="search?query=<%=query%>&&pageNow=<%=i%>"><%=i%></a></li>
+                <li class="page-item active"><a class="page-link" href="search?query=<%=query%>&pageNow=<%=i%>&field=<%=field%>"><%=i%></a></li>
                     <%
                             }
                         }
@@ -186,7 +185,7 @@
                     <%
                         if (pageNow != pageCount) {
                     %>
-                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&&pageNow=<%=pageNow + 1%>">Next</a></li>
+                <li class="page-item"><a class="page-link" href="search?query=<%=query%>&pageNow=<%=pageNow + 1%>&field=<%=field%>">Next</a></li>
                     <%
                         }
                     %>

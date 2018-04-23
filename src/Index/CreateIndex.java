@@ -79,7 +79,6 @@ public class CreateIndex {
                         e.printStackTrace();
                     }
                 }
-                System.out.println("index create success!");
             }
         } finally {
             reader.close();

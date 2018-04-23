@@ -41,7 +41,7 @@ import SearchLucene.*;
 @WebServlet(name = "com.eight.search.SearchServlet")
 public class SearchServlet extends HttpServlet {
     private static int totalDocs = 0;
-    private static final int PAGE_SIZE = 10;// 指定每一页显示10条记录
+    private static final int PAGE_SIZE = 2;// 指定每一页显示10条记录
     private int pageCount = 1;// 总共的页数
     private int rowCount = 1;// 总共有多少条记录
     private int pageNow = 1;// 当前要显示的页数，初始化为1
@@ -60,6 +60,7 @@ public class SearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
         String query = request.getParameter("query");
+        String field = request.getParameter("field");
         System.out.println("查询： " + query);
 
         // 计算查询时间
@@ -100,6 +101,7 @@ public class SearchServlet extends HttpServlet {
             if (results.size() != 0) {
                 //System.out.println("文档长度servlet docList length:" + docList.size());
                 request.setAttribute("query", query);
+                request.setAttribute("field",field);
                 request.setAttribute("docList", pagelist);
                 request.setAttribute("totalDocs", totalDocs);
                 long endTime = System.currentTimeMillis();// end time
@@ -152,7 +154,7 @@ public class SearchServlet extends HttpServlet {
             SimpleHTMLFormatter fors = new SimpleHTMLFormatter("<span style=\"color:#dd2e31;\">", "</span>");
             Highlighter highlighter = new Highlighter(fors, scorer);
             // 返回前10条
-            TopDocs topDocs = searcher.search(query2, 10);
+            TopDocs topDocs = searcher.search(query2, 20);
 
             if (topDocs != null) {
                 long totalMoive = topDocs.totalHits;
@@ -164,9 +166,6 @@ public class SearchServlet extends HttpServlet {
 
                     highlighter.setTextFragmenter(fragment);
 
-//                    TokenStream tokenStream = TokenSources.getAnyTokenStream(dReader,
-//                            topDocs.scoreDocs[i].doc, "movies_title", analyzer);
-
                     String hl_title = highlighter.getBestFragment(TokenSources.getAnyTokenStream(searcher.getIndexReader(),
                             topDocs.scoreDocs[i].doc, "movies_title", analyzer), doc.get("movies_title"));
                     String hl_genres = highlighter.getBestFragment(TokenSources.getAnyTokenStream(searcher.getIndexReader(),
@@ -177,8 +176,6 @@ public class SearchServlet extends HttpServlet {
                     topDocs.scoreDocs[i].doc, "movies_synopsis", analyzer), doc.get("movies_synopsis"));
                     String hl_actors = highlighter.getBestFragment(TokenSources.getAnyTokenStream(searcher.getIndexReader(),
                             topDocs.scoreDocs[i].doc, "movies_actors", analyzer), doc.get("movies_actors"));
-                    //tokenStream = TokenSources.getAnyTokenStream(searcher.getIndexReader(), topDocs.scoreDocs[i].doc,
-                            //fields[1], analyzer);
 
                     MovieDoc movie = new MovieDoc(doc.get("movies_id"),
                             hl_title == null ? doc.get("movies_title") : hl_title,
@@ -187,7 +184,6 @@ public class SearchServlet extends HttpServlet {
                             hl_summary == null ? doc.get("movies_synopsis") : hl_summary,
                             hl_genres == null ? doc.get("movies_genres") : hl_genres,
                             doc.get("movies_url"),
-                            //改
                             hl_actors == null ? doc.get("movies_actors") : hl_actors,
                             doc.get("movies_poster"),
                             doc.get("movies_duration"),
